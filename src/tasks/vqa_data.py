@@ -19,8 +19,8 @@ TINY_IMG_NUM = 512
 FAST_IMG_NUM = 5000
 
 # The path to data and image features.
-VQA_DATA_ROOT = 'data/vqa/'
-MSCOCO_IMGFEAT_ROOT = 'data/mscoco_imgfeat/'
+VQA_DATA_ROOT = '/export/c11/eliasse/vqa/data/vqa/'
+MSCOCO_IMGFEAT_ROOT = '/export/c11/eliasse/vqa/data/mscoco_imgfeat/'
 SPLIT2NAME = {
     'train': 'train2014',
     'valid': 'val2014',
@@ -51,7 +51,9 @@ class VQADataset:
         # Loading datasets
         self.data = []
         for split in self.splits:
-            self.data.extend(json.load(open("data/vqa/%s.json" % split)))
+            print(f"VQA data root {VQA_DATA_ROOT}") 
+            print(f"VQA data root {split}") 
+            self.data.extend(json.load(open(os.path.join(VQA_DATA_ROOT, "%s.json" % split))))
         print("Load %d data from split(s) %s." % (len(self.data), self.name))
 
         # Convert list to dict (for evaluation)
@@ -61,8 +63,8 @@ class VQADataset:
         }
 
         # Answers
-        self.ans2label = json.load(open("data/vqa/trainval_ans2label.json"))
-        self.label2ans = json.load(open("data/vqa/trainval_label2ans.json"))
+        self.ans2label = json.load(open(os.path.join(VQA_DATA_ROOT, "trainval_ans2label.json")))
+        self.label2ans = json.load(open(os.path.join(VQA_DATA_ROOT, "trainval_label2ans.json")))
         assert len(self.ans2label) == len(self.label2ans)
 
     @property

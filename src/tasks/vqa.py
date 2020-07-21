@@ -174,6 +174,9 @@ class VQA:
 
 
 if __name__ == "__main__":
+    # claim cuda 
+    torch.ones(1).to("cuda")
+
     # Build Class
     vqa = VQA()
 
