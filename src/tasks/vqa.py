@@ -55,7 +55,7 @@ class VQA:
                            label2ans=self.train_tuple.dataset.label2ans)
         
         # GPU options
-        self.model = self.model.cuda()
+        self.model = self.model
         if args.multiGPU:
             self.model.lxrt_encoder.multi_gpu()
 
@@ -89,7 +89,7 @@ class VQA:
                 self.model.train()
                 self.optim.zero_grad()
 
-                feats, boxes, target = feats.cuda(), boxes.cuda(), target.cuda()
+                feats, boxes, target = feats, boxes, target
                 logit = self.model(feats, boxes, sent)
                 assert logit.dim() == target.dim() == 2
                 loss = self.bce_loss(logit, target)
@@ -137,10 +137,10 @@ class VQA:
         for i, datum_tuple in enumerate(loader):
             ques_id, feats, boxes, sent = datum_tuple[:4]   # Avoid seeing ground truth
             with torch.no_grad():
-                feats, boxes = feats.cuda(), boxes.cuda()
+                feats, boxes = feats, boxes
                 logit = self.model(feats, boxes, sent)
                 score, label = logit.max(1)
-                for qid, l in zip(ques_id, label.cpu().numpy()):
+                for qid, l in zip(ques_id, label.numpy()):
                     ans = dset.label2ans[l]
                     quesid2ans[qid.item()] = ans
         if dump is not None:
@@ -175,7 +175,7 @@ class VQA:
 
 if __name__ == "__main__":
     # claim cuda 
-    torch.ones(1).to("cuda")
+    torch.ones(1)
 
     # Build Class
     vqa = VQA()
