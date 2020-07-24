@@ -6,6 +6,7 @@ import collections
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.utils.data.dataloader import DataLoader
 from tqdm import tqdm
 
@@ -24,7 +25,7 @@ def get_data_tuple(splits:str, bs:int, shuffle=False, drop_last=False) -> DataTu
     data_loader = DataLoader(
         tset, batch_size=bs,
         shuffle=shuffle, num_workers=args.num_workers,
-        drop_last=drop_last, pin_memory=True
+        drop_last=drop_last, pin_memory=False
     )
 
     return DataTuple(dataset=dset, loader=data_loader, evaluator=evaluator)
@@ -98,7 +99,6 @@ class VQA:
                 loss.backward()
                 nn.utils.clip_grad_norm_(self.model.parameters(), 5.)
                 self.optim.step()
-
                 score, label = logit.max(1)
                 for qid, l in zip(ques_id, label.cpu().numpy()):
                     ans = dset.label2ans[l]
@@ -139,10 +139,13 @@ class VQA:
             with torch.no_grad():
                 feats, boxes = feats, boxes
                 logit = self.model(feats, boxes, sent)
+                probs = F.softmax(logit)
+                prob, p_label = probs.max(1)
                 score, label = logit.max(1)
-                for qid, l in zip(ques_id, label.numpy()):
+                for qid, l, s in zip(ques_id, label.numpy(), prob.numpy()):
                     ans = dset.label2ans[l]
-                    quesid2ans[qid.item()] = ans
+                    s = float(s) 
+                    quesid2ans[qid.item()] = (ans, s) 
         if dump is not None:
             evaluator.dump_result(quesid2ans, dump)
         return quesid2ans
