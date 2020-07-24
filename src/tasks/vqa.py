@@ -55,9 +55,9 @@ class VQA:
                            label2ans=self.train_tuple.dataset.label2ans)
         
         # GPU options
-        self.model = self.model
-        if args.multiGPU:
-            self.model.lxrt_encoder.multi_gpu()
+        #self.model = self.model
+        #if args.multiGPU:
+        #    self.model.lxrt_encoder.multi_gpu()
 
         # Loss and Optimizer
         self.bce_loss = nn.BCEWithLogitsLoss()
@@ -203,6 +203,13 @@ if __name__ == "__main__":
                 dump=os.path.join(args.output, 'minival_predict.json')
             )
             print(result)
+        elif "cloud" in args.test:
+            result = vqa.evaluate(
+                get_data_tuple('output_sunnycloudy', bs=950,
+                               shuffle=False, drop_last=False),
+                dump=os.path.join(args.output, 'cloudy_predict.json')
+            )
+            print(result) 
         else:
             assert False, "No such test option for %s" % args.test
     else:

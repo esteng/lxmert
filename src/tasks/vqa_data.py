@@ -26,6 +26,7 @@ SPLIT2NAME = {
     'valid': 'val2014',
     'minival': 'val2014',
     'nominival': 'val2014',
+    'output_sunnycloudy': 'val2014',
     'test': 'test2015',
 }
 

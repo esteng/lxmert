@@ -244,37 +244,37 @@ class LXMERT:
             self.load_lxmert(args.load_lxmert)
 
         # GPU Options
-        self.model = self.model.cuda()
-        if args.multiGPU:
-            self.model = nn.DataParallel(self.model)
+        self.model = self.model #.cuda()
+        #if args.multiGPU:
+        #    self.model = nn.DataParallel(self.model)
 
     def forward(self, examples):
         train_features = [convert_example_to_features(example, self.max_seq_length, self.tokenizer)
                           for example in examples]
 
         # language Inputs
-        input_ids = torch.tensor([f.input_ids for f in train_features], dtype=torch.long).cuda()
-        input_mask = torch.tensor([f.input_mask for f in train_features], dtype=torch.long).cuda()
-        segment_ids = torch.tensor([f.segment_ids for f in train_features], dtype=torch.long).cuda()
+        input_ids = torch.tensor([f.input_ids for f in train_features], dtype=torch.long)# .cuda()
+        input_mask = torch.tensor([f.input_mask for f in train_features], dtype=torch.long)# .cuda()
+        segment_ids = torch.tensor([f.segment_ids for f in train_features], dtype=torch.long)#.cuda()
 
         # Visual Inputs
-        feats = torch.from_numpy(np.stack([f.visual_feats[0] for f in train_features])).cuda()
-        pos = torch.from_numpy(np.stack([f.visual_feats[1] for f in train_features])).cuda()
+        feats = torch.from_numpy(np.stack([f.visual_feats[0] for f in train_features]))#.cuda()
+        pos = torch.from_numpy(np.stack([f.visual_feats[1] for f in train_features]))#.cuda()
 
         # Language Prediction
-        lm_labels = torch.tensor([f.lm_label_ids for f in train_features], dtype=torch.long).cuda()
+        lm_labels = torch.tensor([f.lm_label_ids for f in train_features], dtype=torch.long)#.cuda()
 
         # Visual Prediction
         obj_labels = {}
         for key in ('obj', 'attr', 'feat'):
-            visn_labels = torch.from_numpy(np.stack([f.obj_labels[key][0] for f in train_features])).cuda()
-            visn_mask = torch.from_numpy(np.stack([f.obj_labels[key][1] for f in train_features])).cuda()
+            visn_labels = torch.from_numpy(np.stack([f.obj_labels[key][0] for f in train_features]))#.cuda()
+            visn_mask = torch.from_numpy(np.stack([f.obj_labels[key][1] for f in train_features]))#.cuda()
             assert visn_labels.size(0) == visn_mask.size(0) and visn_labels.size(1) == visn_mask.size(1)
             obj_labels[key] = (visn_labels, visn_mask)
 
         # Joint Prediction
-        matched_labels = torch.tensor([f.is_matched for f in train_features], dtype=torch.long).cuda()
-        ans = torch.from_numpy(np.stack([f.ans for f in train_features])).cuda()
+        matched_labels = torch.tensor([f.is_matched for f in train_features], dtype=torch.long)#.cuda()
+        ans = torch.from_numpy(np.stack([f.ans for f in train_features]))#.cuda()
 
         """
         forward(self, input_ids, token_type_ids=None, attention_mask=None, masked_lm_labels=None,
