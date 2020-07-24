@@ -9,7 +9,7 @@ cp $0 $output/run.bash
 
 # See Readme.md for option details.
 PYTHONPATH=$PYTHONPATH:./src \
-    python src/tasks/vqa.py \
+    python -u src/tasks/vqa.py \
     --tiny --train train --valid ""  \
     --llayers 9 --xlayers 5 --rlayers 5 \
     --batchSize 32 --optim bert --lr 5e-5 --epochs 4 \
